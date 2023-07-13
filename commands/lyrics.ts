@@ -3,15 +3,16 @@ import { i18n } from "../utils/i18n";
 // @ts-ignore
 import lyricsFinder from "lyrics-finder";
 import { bot } from "../index";
+import { Logger } from "../utils/logger";
 
 export default {
   data: new SlashCommandBuilder().setName("lyrics").setDescription(i18n.__("lyrics.description")),
   async execute(interaction: ChatInputCommandInteraction) {
     const queue = bot.queues.get(interaction.guild!.id);
 
-    if (!queue || !queue.songs.length) return interaction.reply(i18n.__("lyrics.errorNotQueue")).catch(console.error);
+    if (!queue || !queue.songs.length) return interaction.reply(i18n.__("lyrics.errorNotQueue")).catch(Logger.error);
 
-    await interaction.reply("⏳ Loading...").catch(console.error);
+    await interaction.reply("⏳ Loading...").catch(Logger.error);
 
     let lyrics = null;
     const title = queue.songs[0].title;
@@ -29,6 +30,6 @@ export default {
       .setColor("#F8AA2A")
       .setTimestamp();
 
-    return interaction.editReply({ content: "", embeds: [lyricsEmbed] }).catch(console.error);
+    return interaction.editReply({ content: "", embeds: [lyricsEmbed] }).catch(Logger.error);
   }
 };

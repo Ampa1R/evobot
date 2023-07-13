@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { bot } from "../index";
 import { i18n } from "../utils/i18n";
+import { Logger } from "../utils/logger";
 
 export default {
   data: new SlashCommandBuilder().setName("uptime").setDescription(i18n.__("uptime.description")),
@@ -16,6 +17,6 @@ export default {
 
     return interaction
       .reply({ content: i18n.__mf("uptime.result", { days: days, hours: hours, minutes: minutes, seconds: seconds }) })
-      .catch(console.error);
+      .catch(Logger.error);
   }
 };

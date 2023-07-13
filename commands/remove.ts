@@ -3,6 +3,7 @@ import { bot } from "../index";
 import { Song } from "../structs/Song";
 import { i18n } from "../utils/i18n";
 import { canModifyQueue } from "../utils/queue";
+import { Logger } from "../utils/logger";
 
 const pattern = /^[0-9]{1,2}(\s*,\s*[0-9]{1,2})*$/;
 
@@ -20,7 +21,7 @@ export default {
     const queue = bot.queues.get(interaction.guild!.id);
 
     if (!queue)
-      return interaction.reply({ content: i18n.__("remove.errorNotQueue"), ephemeral: true }).catch(console.error);
+      return interaction.reply({ content: i18n.__("remove.errorNotQueue"), ephemeral: true }).catch(Logger.error);
 
     if (!canModifyQueue(guildMemer!)) return i18n.__("common.errorNotChannel");
 

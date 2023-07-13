@@ -3,6 +3,7 @@ import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { bot } from "../index";
 import { i18n } from "../utils/i18n";
 import { canModifyQueue } from "../utils/queue";
+import { Logger } from "../utils/logger";
 
 export default {
   data: new SlashCommandBuilder()
@@ -21,7 +22,7 @@ export default {
     const guildMemer = interaction.guild!.members.cache.get(interaction.user.id);
     const queue = bot.queues.get(interaction.guild!.id);
 
-    if (!queue) return interaction.reply(i18n.__("move.errorNotQueue")).catch(console.error);
+    if (!queue) return interaction.reply(i18n.__("move.errorNotQueue")).catch(Logger.error);
 
     if (!canModifyQueue(guildMemer!)) return;
 

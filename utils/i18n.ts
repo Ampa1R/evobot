@@ -1,6 +1,7 @@
 import i18n from "i18n";
 import { join } from "path";
 import { config } from "./config";
+import { Logger } from "./logger";
 
 i18n.configure({
   locales: [
@@ -38,11 +39,11 @@ i18n.configure({
   register: global,
 
   logWarnFn: function (msg) {
-    console.log(msg);
+    Logger.log(msg);
   },
 
   logErrorFn: function (msg) {
-    console.log(msg);
+    Logger.log(msg);
   },
 
   missingKeyFn: function (locale, value) {

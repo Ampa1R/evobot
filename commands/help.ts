@@ -1,6 +1,7 @@
 import { CommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import { i18n } from "../utils/i18n";
 import { bot } from "../index";
+import { Logger } from "../utils/logger";
 
 export default {
   data: new SlashCommandBuilder().setName("help").setDescription(i18n.__("help.description")),
@@ -22,6 +23,6 @@ export default {
 
     helpEmbed.setTimestamp();
 
-    return interaction.reply({ embeds: [helpEmbed] }).catch(console.error);
+    return interaction.reply({ embeds: [helpEmbed] }).catch(Logger.error);
   }
 };

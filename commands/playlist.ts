@@ -11,6 +11,7 @@ import { MusicQueue } from "../structs/MusicQueue";
 import { Playlist } from "../structs/Playlist";
 import { Song } from "../structs/Song";
 import { i18n } from "../utils/i18n";
+import { Logger } from "../utils/logger";
 
 export default {
   data: new SlashCommandBuilder()
@@ -33,34 +34,34 @@ export default {
     const queue = bot.queues.get(interaction.guild!.id);
 
     if (!channel)
-      return interaction.reply({ content: i18n.__("playlist.errorNotChannel"), ephemeral: true }).catch(console.error);
+      return interaction.reply({ content: i18n.__("playlist.errorNotChannel"), ephemeral: true }).catch(Logger.error);
 
     if (queue && channel.id !== queue.connection.joinConfig.channelId)
       if (interaction.replied)
         return interaction
           .editReply({ content: i18n.__mf("play.errorNotInSameChannel", { user: interaction.client.user!.username }) })
-          .catch(console.error);
+          .catch(Logger.error);
       else
         return interaction
           .reply({
             content: i18n.__mf("play.errorNotInSameChannel", { user: interaction.client.user!.username }),
             ephemeral: true
           })
-          .catch(console.error);
+          .catch(Logger.error);
 
     let playlist;
 
     try {
       playlist = await Playlist.from(argSongName!.split(" ")[0], argSongName!);
     } catch (error) {
-      console.error(error);
+      Logger.error(error);
 
       if (interaction.replied)
-        return interaction.editReply({ content: i18n.__("playlist.errorNotFoundPlaylist") }).catch(console.error);
+        return interaction.editReply({ content: i18n.__("playlist.errorNotFoundPlaylist") }).catch(Logger.error);
       else
         return interaction
           .reply({ content: i18n.__("playlist.errorNotFoundPlaylist"), ephemeral: true })
-          .catch(console.error);
+          .catch(Logger.error);
     }
 
     if (queue) {
@@ -98,6 +99,6 @@ export default {
         content: i18n.__mf("playlist.startedPlaylist", { author: interaction.user.id }),
         embeds: [playlistEmbed]
       })
-      .catch(console.error);
+      .catch(Logger.error);
   }
 };

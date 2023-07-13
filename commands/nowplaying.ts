@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from "
 import { splitBar } from "string-progressbar";
 import { bot } from "../index";
 import { i18n } from "../utils/i18n";
+import { Logger } from "../utils/logger";
 
 export default {
   data: new SlashCommandBuilder().setName("nowplaying").setDescription(i18n.__("nowplaying.description")),
@@ -10,7 +11,7 @@ export default {
     const queue = bot.queues.get(interaction.guild!.id);
 
     if (!queue || !queue.songs.length)
-      return interaction.reply({ content: i18n.__("nowplaying.errorNotQueue"), ephemeral: true }).catch(console.error);
+      return interaction.reply({ content: i18n.__("nowplaying.errorNotQueue"), ephemeral: true }).catch(Logger.error);
 
     const song = queue.songs[0];
     const seek = queue.resource.playbackDuration / 1000;

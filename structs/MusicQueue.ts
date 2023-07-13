@@ -19,10 +19,12 @@ import { config } from "../utils/config";
 import { i18n } from "../utils/i18n";
 import { canModifyQueue } from "../utils/queue";
 import { Song } from "./Song";
+import { Logger } from "../utils/logger";
 
 const wait = promisify(setTimeout);
 
 export class MusicQueue {
+  private readonly logger = new Logger(this.constructor.name);
   public readonly interaction: CommandInteraction;
   public readonly connection: VoiceConnection;
   public readonly player: AudioPlayer;
@@ -59,7 +61,7 @@ export class MusicQueue {
           try {
             this.stop();
           } catch (e) {
-            console.log(e);
+            this.logger.log(e);
             this.stop();
           }
         } else if (this.connection.rejoinAttempts < 5) {
@@ -103,7 +105,7 @@ export class MusicQueue {
     });
 
     this.player.on("error", (error) => {
-      console.error(error);
+      this.logger.error(error);
 
       if (this.loop && this.songs.length) {
         this.songs.push(this.songs.shift()!);
@@ -131,7 +133,7 @@ export class MusicQueue {
     this.songs = [];
     this.player.stop();
 
-    !config.PRUNING && this.textChannel.send(i18n.__("play.queueEnded")).catch(console.error);
+    !config.PRUNING && this.textChannel.send(i18n.__("play.queueEnded")).catch(this.logger.error);
 
     if (this.waitTimeout !== null) return;
 
@@ -167,7 +169,7 @@ export class MusicQueue {
       this.player.play(this.resource);
       this.resource.volume?.setVolumeLogarithmic(this.volume / 100);
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
 
       return this.processQueue();
     } finally {
@@ -192,7 +194,7 @@ export class MusicQueue {
       await playingMessage.react("🔀");
       await playingMessage.react("⏹");
     } catch (error: any) {
-      console.error(error);
+      this.logger.error(error);
       this.textChannel.send(error.message);
       return;
     }
@@ -214,12 +216,12 @@ export class MusicQueue {
 
       switch (reaction.emoji.name) {
         case "⏭":
-          reaction.users.remove(user).catch(console.error);
+          reaction.users.remove(user).catch(this.logger.error);
           await this.bot.slashCommandsMap.get("skip")!.execute(this.interaction);
           break;
 
         case "⏯":
-          reaction.users.remove(user).catch(console.error);
+          reaction.users.remove(user).catch(this.logger.error);
           if (this.player.state.status == AudioPlayerStatus.Playing) {
             await this.bot.slashCommandsMap.get("pause")!.execute(this.interaction);
           } else {
@@ -228,64 +230,64 @@ export class MusicQueue {
           break;
 
         case "🔇":
-          reaction.users.remove(user).catch(console.error);
+          reaction.users.remove(user).catch(this.logger.error);
           if (!canModifyQueue(member)) return i18n.__("common.errorNotChannel");
           this.muted = !this.muted;
           if (this.muted) {
             this.resource.volume?.setVolumeLogarithmic(0);
-            this.textChannel.send(i18n.__mf("play.mutedSong", { author: user })).catch(console.error);
+            this.textChannel.send(i18n.__mf("play.mutedSong", { author: user })).catch(this.logger.error);
           } else {
             this.resource.volume?.setVolumeLogarithmic(this.volume / 100);
-            this.textChannel.send(i18n.__mf("play.unmutedSong", { author: user })).catch(console.error);
+            this.textChannel.send(i18n.__mf("play.unmutedSong", { author: user })).catch(this.logger.error);
           }
           break;
 
         case "🔉":
-          reaction.users.remove(user).catch(console.error);
+          reaction.users.remove(user).catch(this.logger.error);
           if (this.volume == 0) return;
           if (!canModifyQueue(member)) return i18n.__("common.errorNotChannel");
           this.volume = Math.max(this.volume - 10, 0);
           this.resource.volume?.setVolumeLogarithmic(this.volume / 100);
           this.textChannel
             .send(i18n.__mf("play.decreasedVolume", { author: user, volume: this.volume }))
-            .catch(console.error);
+            .catch(this.logger.error);
           break;
 
         case "🔊":
-          reaction.users.remove(user).catch(console.error);
+          reaction.users.remove(user).catch(this.logger.error);
           if (this.volume == 100) return;
           if (!canModifyQueue(member)) return i18n.__("common.errorNotChannel");
           this.volume = Math.min(this.volume + 10, 100);
           this.resource.volume?.setVolumeLogarithmic(this.volume / 100);
           this.textChannel
             .send(i18n.__mf("play.increasedVolume", { author: user, volume: this.volume }))
-            .catch(console.error);
+            .catch(this.logger.error);
           break;
 
         case "🔁":
-          reaction.users.remove(user).catch(console.error);
+          reaction.users.remove(user).catch(this.logger.error);
           await this.bot.slashCommandsMap.get("loop")!.execute(this.interaction);
           break;
 
         case "🔀":
-          reaction.users.remove(user).catch(console.error);
+          reaction.users.remove(user).catch(this.logger.error);
           await this.bot.slashCommandsMap.get("shuffle")!.execute(this.interaction);
           break;
 
         case "⏹":
-          reaction.users.remove(user).catch(console.error);
+          reaction.users.remove(user).catch(this.logger.error);
           await this.bot.slashCommandsMap.get("stop")!.execute(this.interaction);
           collector.stop();
           break;
 
         default:
-          reaction.users.remove(user).catch(console.error);
+          reaction.users.remove(user).catch(this.logger.error);
           break;
       }
     });
 
     collector.on("end", () => {
-      playingMessage.reactions.removeAll().catch(console.error);
+      playingMessage.reactions.removeAll().catch(this.logger.error);
 
       if (config.PRUNING) {
         setTimeout(() => {

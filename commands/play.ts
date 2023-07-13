@@ -5,6 +5,7 @@ import { MusicQueue } from "../structs/MusicQueue";
 import { Song } from "../structs/Song";
 import { i18n } from "../utils/i18n";
 import { playlistPattern } from "../utils/patterns";
+import { Logger } from "../utils/logger";
 
 export default {
   data: new SlashCommandBuilder()
@@ -26,7 +27,7 @@ export default {
     const { channel } = guildMember!.voice;
 
     if (!channel)
-      return interaction.reply({ content: i18n.__("play.errorNotChannel"), ephemeral: true }).catch(console.error);
+      return interaction.reply({ content: i18n.__("play.errorNotChannel"), ephemeral: true }).catch(Logger.error);
 
     const queue = bot.queues.get(interaction.guild!.id);
 
@@ -36,21 +37,21 @@ export default {
           content: i18n.__mf("play.errorNotInSameChannel", { user: bot.client.user!.username }),
           ephemeral: true
         })
-        .catch(console.error);
+        .catch(Logger.error);
 
     if (!argSongName)
       return interaction
         .reply({ content: i18n.__mf("play.usageReply", { prefix: bot.prefix }), ephemeral: true })
-        .catch(console.error);
+        .catch(Logger.error);
 
     const url = argSongName;
 
-    if (interaction.replied) await interaction.editReply("⏳ Loading...").catch(console.error);
+    if (interaction.replied) await interaction.editReply("⏳ Loading...").catch(Logger.error);
     else await interaction.reply("⏳ Loading...");
 
     // Start the playlist if playlist url was provided
     if (playlistPattern.test(url)) {
-      await interaction.editReply("🔗 Link is playlist").catch(console.error);
+      await interaction.editReply("🔗 Link is playlist").catch(Logger.error);
 
       return bot.slashCommandsMap.get("playlist")!.execute(interaction, 'song');
     }
@@ -63,16 +64,16 @@ export default {
       if (error.name == "NoResults")
         return interaction
           .reply({ content: i18n.__mf("play.errorNoResults", { url: `<${url}>` }), ephemeral: true })
-          .catch(console.error);
+          .catch(Logger.error);
       if (error.name == "InvalidURL")
         return interaction
           .reply({ content: i18n.__mf("play.errorInvalidURL", { url: `<${url}>` }), ephemeral: true })
-          .catch(console.error);
+          .catch(Logger.error);
 
-      console.error(error);
+      Logger.error(error);
       if (interaction.replied)
-        return await interaction.editReply({ content: i18n.__("common.errorCommand") }).catch(console.error);
-      else return interaction.reply({ content: i18n.__("common.errorCommand"), ephemeral: true }).catch(console.error);
+        return await interaction.editReply({ content: i18n.__("common.errorCommand") }).catch(Logger.error);
+      else return interaction.reply({ content: i18n.__("common.errorCommand"), ephemeral: true }).catch(Logger.error);
     }
 
     if (queue) {
@@ -80,7 +81,7 @@ export default {
 
       return (interaction.channel as TextChannel)
         .send({ content: i18n.__mf("play.queueAdded", { title: song.title, author: interaction.user.id }) })
-        .catch(console.error);
+        .catch(Logger.error);
     }
 
     const newQueue = new MusicQueue({
@@ -96,6 +97,6 @@ export default {
     bot.queues.set(interaction.guild!.id, newQueue);
 
     newQueue.enqueue(song);
-    interaction.deleteReply().catch(console.error);
+    interaction.deleteReply().catch(Logger.error);
   }
 };

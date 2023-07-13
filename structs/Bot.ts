@@ -1,4 +1,5 @@
 import {
+  ActivityType,
   ApplicationCommandDataResolvable,
   ChatInputCommandInteraction,
   Client,
@@ -17,8 +18,10 @@ import { config } from "../utils/config";
 import { i18n } from "../utils/i18n";
 import { MissingPermissionsException } from "../utils/MissingPermissionsException";
 import { MusicQueue } from "./MusicQueue";
+import { Logger } from "../utils/logger";
 
 export class Bot {
+  private readonly logger = new Logger(this.constructor.name);
   public readonly prefix = config.PREFIX;
   public commands = new Collection<string, Command>();
   public slashCommands = new Array<ApplicationCommandDataResolvable>();
@@ -30,13 +33,18 @@ export class Bot {
     this.client.login(config.TOKEN);
 
     this.client.on("ready", () => {
-      console.log(`${this.client.user!.username} ready!`);
+      this.logger.log(`${this.client.user!.username} ready!`);
 
       this.registerSlashCommands();
     });
 
-    this.client.on("warn", (info) => console.log(info));
-    this.client.on("error", console.error);
+    this.client.on("warn", (info) => this.logger.log(info));
+    this.client.on("error", this.logger.error);
+
+    this.client.user?.setActivity({
+      name: 'Foo',
+      type: ActivityType.Listening,
+    });
 
     this.onInteractionCreate();
   }
@@ -99,12 +107,12 @@ export class Bot {
           throw new MissingPermissionsException(permissionsCheck.missing);
         }
       } catch (error: any) {
-        console.error(error);
+        this.logger.error(error);
 
         if (error.message.includes("permissions")) {
-          interaction.reply({ content: error.toString(), ephemeral: true }).catch(console.error);
+          interaction.reply({ content: error.toString(), ephemeral: true }).catch(this.logger.error);
         } else {
-          interaction.reply({ content: i18n.__("common.errorCommand"), ephemeral: true }).catch(console.error);
+          interaction.reply({ content: i18n.__("common.errorCommand"), ephemeral: true }).catch(this.logger.error);
         }
       }
     });

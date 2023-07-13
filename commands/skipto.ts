@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { bot } from "../index";
 import { i18n } from "../utils/i18n";
 import { canModifyQueue } from "../utils/queue";
+import { Logger } from "../utils/logger";
 
 export default {
   data: new SlashCommandBuilder()
@@ -20,19 +21,19 @@ export default {
           content: i18n.__mf("skipto.usageReply", { prefix: bot.prefix, name: module.exports.name }),
           ephemeral: true
         })
-        .catch(console.error);
+        .catch(Logger.error);
 
     const queue = bot.queues.get(interaction.guild!.id);
 
     if (!queue)
-      return interaction.reply({ content: i18n.__("skipto.errorNotQueue"), ephemeral: true }).catch(console.error);
+      return interaction.reply({ content: i18n.__("skipto.errorNotQueue"), ephemeral: true }).catch(Logger.error);
 
     if (!canModifyQueue(guildMemer!)) return i18n.__("common.errorNotChannel");
 
     if (playlistSlotArg > queue.songs.length)
       return interaction
         .reply({ content: i18n.__mf("skipto.errorNotValid", { length: queue.songs.length }), ephemeral: true })
-        .catch(console.error);
+        .catch(Logger.error);
 
     if (queue.loop) {
       for (let i = 0; i < playlistSlotArg - 2; i++) {
@@ -46,6 +47,6 @@ export default {
 
     interaction
       .reply({ content: i18n.__mf("skipto.result", { author: interaction.user.id, arg: playlistSlotArg - 1 }) })
-      .catch(console.error);
+      .catch(Logger.error);
   }
 };

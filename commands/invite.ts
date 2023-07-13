@@ -7,6 +7,7 @@ import {
   SlashCommandBuilder
 } from "discord.js";
 import { i18n } from "../utils/i18n";
+import { Logger } from "../utils/logger";
 
 export default {
   data: new SlashCommandBuilder().setName("invite").setDescription(i18n.__("invite.description")),
@@ -25,6 +26,6 @@ export default {
         )
     );
 
-    return interaction.reply({ embeds: [inviteEmbed], components: [actionRow] }).catch(console.error);
+    return interaction.reply({ embeds: [inviteEmbed], components: [actionRow] }).catch(Logger.error);
   }
 };

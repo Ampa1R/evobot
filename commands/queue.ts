@@ -11,6 +11,7 @@ import {
 import { bot } from "../index";
 import { Song } from "../structs/Song";
 import { i18n } from "../utils/i18n";
+import { Logger } from "../utils/logger";
 
 export default {
   data: new SlashCommandBuilder().setName("queue").setDescription(i18n.__("queue.description")),
@@ -38,8 +39,8 @@ export default {
       await queueEmbed.react("⏹");
       await queueEmbed.react("➡️");
     } catch (error: any) {
-      console.error(error);
-      (interaction.channel as TextChannel).send(error.message).catch(console.error);
+      Logger.error(error);
+      (interaction.channel as TextChannel).send(error.message).catch(Logger.error);
     }
 
     const filter = (reaction: MessageReaction, user: User) =>
@@ -71,8 +72,8 @@ export default {
         }
         await reaction.users.remove(interaction.user.id);
       } catch (error: any) {
-        console.error(error);
-        return (interaction.channel as TextChannel).send(error.message).catch(console.error);
+        Logger.error(error);
+        return (interaction.channel as TextChannel).send(error.message).catch(Logger.error);
       }
     });
   }

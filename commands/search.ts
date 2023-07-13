@@ -8,6 +8,7 @@ import {
 import youtube, { Video } from "youtube-sr";
 import { bot } from "..";
 import { i18n } from "../utils/i18n";
+import { Logger } from "../utils/logger";
 
 export default {
   data: new SlashCommandBuilder()
@@ -21,20 +22,20 @@ export default {
     const member = interaction.guild!.members.cache.get(interaction.user.id);
 
     if (!member?.voice.channel)
-      return interaction.reply({ content: i18n.__("search.errorNotChannel"), ephemeral: true }).catch(console.error);
+      return interaction.reply({ content: i18n.__("search.errorNotChannel"), ephemeral: true }).catch(Logger.error);
 
     const search = query;
 
-    await interaction.reply("⏳ Loading...").catch(console.error);
+    await interaction.reply("⏳ Loading...").catch(Logger.error);
 
     let results: Video[] = [];
 
     try {
       results = await youtube.search(search, { limit: 10, type: "video" });
     } catch (error: any) {
-      console.error(error);
+      Logger.error(error);
 
-      interaction.editReply({ content: i18n.__("common.errorCommand") }).catch(console.error);
+      interaction.editReply({ content: i18n.__("common.errorCommand") }).catch(Logger.error);
     }
 
     if (!results) return;
@@ -78,6 +79,6 @@ export default {
             });
           });
       })
-      .catch(console.error);
+      .catch(Logger.error);
   }
 };

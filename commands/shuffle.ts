@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { bot } from "../index";
 import { i18n } from "../utils/i18n";
 import { canModifyQueue } from "../utils/queue";
+import { Logger } from "../utils/logger";
 
 export default {
   data: new SlashCommandBuilder().setName("shuffle").setDescription(i18n.__("shuffle.description")),
@@ -10,7 +11,7 @@ export default {
     const guildMemer = interaction.guild!.members.cache.get(interaction.user.id);
 
     if (!queue)
-      return interaction.reply({ content: i18n.__("shuffle.errorNotQueue"), ephemeral: true }).catch(console.error);
+      return interaction.reply({ content: i18n.__("shuffle.errorNotQueue"), ephemeral: true }).catch(Logger.error);
 
     if (!guildMemer || !canModifyQueue(guildMemer)) return i18n.__("common.errorNotChannel");
 
@@ -25,7 +26,7 @@ export default {
 
     const content = { content: i18n.__mf("shuffle.result", { author: interaction.user.id }) };
 
-    if (interaction.replied) interaction.followUp(content).catch(console.error);
-    else interaction.reply(content).catch(console.error);
+    if (interaction.replied) interaction.followUp(content).catch(Logger.error);
+    else interaction.reply(content).catch(Logger.error);
   }
 };
