@@ -99,6 +99,7 @@ export class Bot {
         const permissionsCheck: PermissionResult = await checkPermissions(command, interaction);
 
         if (permissionsCheck.result) {
+          this.logger.log(`Command "${command.data.name}" is used by ${interaction.user.username}`);
           command.execute(interaction as ChatInputCommandInteraction);
         } else {
           throw new MissingPermissionsException(permissionsCheck.missing);
