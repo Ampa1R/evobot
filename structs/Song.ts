@@ -12,6 +12,7 @@ export interface SongData {
 }
 
 export class Song {
+  private readonly logger = new Logger(this.constructor.name);
   public readonly url: string;
   public readonly title: string;
   public readonly duration: number;
@@ -62,7 +63,8 @@ export class Song {
   public async makeResource(): Promise<AudioResource<Song> | void> {
     let playStream;
 
-    let type = this.url.includes("youtube.com") ? StreamType.Opus : StreamType.OggOpus;
+    // TODO del?
+    // let type = this.url.includes("youtube.com") ? StreamType.Opus : StreamType.OggOpus;
 
     const source = this.url.includes("youtube") ? "youtube" : "soundcloud";
 
@@ -70,7 +72,10 @@ export class Song {
       playStream = await stream(this.url);
     }
 
+    // TOOD check playStream mb?
     if (!stream) return;
+    
+    this.logger.log(`Playing ${this.title} (${this.duration})`);
 
     return createAudioResource(playStream.stream, { metadata: this, inputType: playStream.type, inlineVolume: true });
   }

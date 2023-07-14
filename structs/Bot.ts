@@ -19,6 +19,7 @@ import { i18n } from "../utils/i18n";
 import { MissingPermissionsException } from "../utils/MissingPermissionsException";
 import { MusicQueue } from "./MusicQueue";
 import { Logger } from "../utils/logger";
+import { Song } from "./Song";
 
 export class Bot {
   private readonly logger = new Logger(this.constructor.name);
@@ -36,15 +37,11 @@ export class Bot {
       this.logger.log(`${this.client.user!.username} ready!`);
 
       this.registerSlashCommands();
+      this.setSong();
     });
 
     this.client.on("warn", (info) => this.logger.log(info));
     this.client.on("error", this.logger.error);
-
-    this.client.user?.setActivity({
-      name: 'Foo',
-      type: ActivityType.Listening,
-    });
 
     this.onInteractionCreate();
   }
@@ -116,5 +113,19 @@ export class Bot {
         }
       }
     });
+  }
+
+  public setSong(song?: Song) {
+    if (song) {
+      this.client.user?.setActivity({
+        name: song.title,
+        url: song.url,
+        type: ActivityType.Playing,
+      });
+    } else {
+      this.client.user?.setPresence({
+        activities: []
+      });
+    }
   }
 }

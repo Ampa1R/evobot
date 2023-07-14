@@ -133,6 +133,8 @@ export class MusicQueue {
     this.songs = [];
     this.player.stop();
 
+    this.logger.log("Queue ended");
+    this.bot.setSong();
     !config.PRUNING && this.textChannel.send(i18n.__("play.queueEnded")).catch(this.logger.error);
 
     if (this.waitTimeout !== null) return;
@@ -183,7 +185,8 @@ export class MusicQueue {
     let playingMessage: Message;
 
     try {
-      playingMessage = await this.textChannel.send((newState.resource as AudioResource<Song>).metadata.startMessage());
+      playingMessage = await this.textChannel.send(song.startMessage());
+      this.bot.setSong(song);
 
       await playingMessage.react("⏭");
       await playingMessage.react("⏯");
@@ -210,9 +213,9 @@ export class MusicQueue {
       if (!this.songs) return;
 
       const member = await playingMessage.guild!.members.fetch(user);
-      Object.defineProperty(this.interaction, 'user', {
+      Object.defineProperty(this.interaction, "user", {
         value: user
-      })
+      });
 
       switch (reaction.emoji.name) {
         case "⏭":
