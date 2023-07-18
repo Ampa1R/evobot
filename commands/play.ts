@@ -71,9 +71,12 @@ export default {
           .catch(Logger.error);
 
       Logger.error(error.name, error);
-      if (interaction.replied)
-        return await interaction.editReply({ content: i18n.__("common.errorCommand") }).catch(Logger.error);
-      else return interaction.reply({ content: i18n.__("common.errorCommand"), ephemeral: true }).catch(Logger.error);
+      if (interaction.replied) {
+        return await interaction.editReply({ content: i18n.__mf("common.errorCommand", { error: error.message || 'Unknown error' }) }).catch(Logger.error);
+      }
+      else {
+        return interaction.reply({ content: i18n.__mf("common.errorCommand", { error: error.message || 'Unknown error' }), ephemeral: true }).catch(Logger.error);
+      }
     }
 
     if (queue) {
