@@ -61,6 +61,7 @@ export class Song {
   }
 
   public async makeResource(): Promise<AudioResource<Song> | void> {
+    this.logger.log(`Playing ${this.title} (${this.duration})`);
     let playStream;
 
     // TODO del?
@@ -75,7 +76,6 @@ export class Song {
     // TOOD check playStream mb?
     if (!stream) return;
     
-    this.logger.log(`Playing ${this.title} (${this.duration})`);
 
     return createAudioResource(playStream.stream, { metadata: this, inputType: playStream.type, inlineVolume: true });
   }
