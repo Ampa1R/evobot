@@ -170,12 +170,13 @@ export class MusicQueue {
       this.resource = resource!;
       this.player.play(this.resource);
       this.resource.volume?.setVolumeLogarithmic(this.volume / 100);
-    } catch (error) {
-      this.logger.error(error);
+      this.queueLock = false;
+    } catch (error: any) {
+      this.logger.error(error.name, error);
+      this.songs.shift();
+      this.queueLock = false;
 
       return this.processQueue();
-    } finally {
-      this.queueLock = false;
     }
   }
 
