@@ -1,0 +1,7 @@
+name: evobot
+services:
+  evobot:
+    container_name: evobot
+    build:
+      context: ./
+      dockerfile: Dockerfile
