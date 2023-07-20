@@ -16,7 +16,7 @@ USER ${USER}
 WORKDIR /home/evobot
 
 COPY --chown=${USER}:${USER} package*.json ./
-RUN npm install
+RUN npm ci
 VOLUME [ "/home/evobot" ]
 
 COPY --chown=${USER}:${USER}  . .
