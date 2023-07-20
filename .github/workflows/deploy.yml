@@ -36,6 +36,8 @@ jobs:
             mv evobot_${{ github.event.inputs.choice }}_fresh evobot_${{ github.event.inputs.choice }};
             cp envs/evobot_${{ github.event.inputs.choice }}.config.json evobot_${{ github.event.inputs.choice }}/config.json;
             cd evobot_${{ github.event.inputs.choice }};
+            docker stop ${{ github.event.inputs.choice }};
+            docker rm ${{ github.event.inputs.choice }};
             docker build --no-cache -t evobot:${{ github.event.inputs.choice }} .;
             docker run -d --name=${{ github.event.inputs.choice }} evobot:${{ github.event.inputs.choice }};
           '
