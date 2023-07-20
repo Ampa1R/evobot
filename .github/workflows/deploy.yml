@@ -1,0 +1,41 @@
+name: Deploy Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      choice:
+        type: choice
+        description: Bot
+        options:
+        - mozart
+        - wagner
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: "just-a-placeholder-so-we-dont-get-errors"
+      - name: Adding Known Hosts
+        run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Copy sources to server
+        run: rsync -avz ./ root@${{ secrets.SSH_HOST }}:/home/ci/apps/evobot_${{ github.event.inputs.choice }}_fresh
+      - name: Build & run application
+        run: >-
+          ssh root@${{ secrets.SSH_HOST }}
+          '
+            uptime;
+            cd /home/ci/apps;
+            rm -rf evobot_${{ github.event.inputs.choice }}_prev;
+            mv evobot_${{ github.event.inputs.choice }} evobot_${{ github.event.inputs.choice }}_prev;
+            mv evobot_${{ github.event.inputs.choice }}_fresh evobot_${{ github.event.inputs.choice }};
+            cp envs/evobot_${{ github.event.inputs.choice }}.config.json evobot_${{ github.event.inputs.choice }}/config.json;
+            cd evobot_${{ github.event.inputs.choice }};
+            docker build --no-cache -t evobot:${{ github.event.inputs.choice }} .;
+            docker run -d --name=${{ github.event.inputs.choice }} evobot:${{ github.event.inputs.choice }};
+          '
