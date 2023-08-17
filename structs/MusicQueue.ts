@@ -11,7 +11,7 @@ import {
   VoiceConnectionState,
   VoiceConnectionStatus
 } from "@discordjs/voice";
-import { CommandInteraction, Message, TextChannel, User } from "discord.js";
+import { CommandInteraction, Message, TextChannel, User, VoiceChannel } from "discord.js";
 import { promisify } from "node:util";
 import { bot } from "../index";
 import { QueueOptions } from "../interfaces/QueueOptions";
@@ -166,6 +166,14 @@ export class MusicQueue {
 
     try {
       const resource = await next.makeResource();
+
+      if (this.connection.joinConfig.channelId) {
+        const channel = this.bot.client.channels.cache.get(this.connection.joinConfig.channelId);
+        if (channel instanceof VoiceChannel && channel.members.size < 2) {
+          this.logger.log(`Stop playing in channel ${channel.name} since it has less than 2 active members`);
+          return this.stop();
+        }
+      }
 
       this.resource = resource!;
       this.player.play(this.resource);
