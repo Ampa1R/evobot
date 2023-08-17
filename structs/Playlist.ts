@@ -4,6 +4,11 @@ import { Song } from "./Song";
 
 const pattern = /^.*(youtu.be\/|list=)([^#\&\?]*).*/i;
 
+export enum PlaylistPreset {
+  Mashup = "playlist_mashup",
+  DotaNight = "playlist_dota_night"
+}
+
 export class Playlist {
   public data: YoutubePlaylist;
   public videos: Song[];
@@ -36,5 +41,14 @@ export class Playlist {
     }
 
     return new this(playlist);
+  }
+
+  private static presets: Map<string, string> = new Map([
+    [PlaylistPreset.DotaNight, "https://youtube.com/playlist?list=PLlNHQmUIaTEoeDhRjQzNnhbe5rvRpaasr"],
+    [PlaylistPreset.Mashup, "https://www.youtube.com/playlist?list=PL-HyRIRUsinrpkW9X_RB-tNn3_sjfgU0l"]
+  ]);
+
+  public static getUrlFor(preset: PlaylistPreset): string | null {
+    return Playlist.presets.get(preset) || null;
   }
 }

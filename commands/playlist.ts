@@ -8,16 +8,27 @@ import {
 } from "discord.js";
 import { bot } from "../index";
 import { MusicQueue } from "../structs/MusicQueue";
-import { Playlist } from "../structs/Playlist";
+import { Playlist, PlaylistPreset } from "../structs/Playlist";
 import { Song } from "../structs/Song";
 import { i18n } from "../utils/i18n";
 import { Logger } from "../utils/logger";
+
+enum PlaylistCommandOption {
+  Search = 'search',
+  Preset = 'preset',
+}
 
 export default {
   data: new SlashCommandBuilder()
     .setName("playlist")
     .setDescription(i18n.__("playlist.description"))
-    .addStringOption((option) => option.setName("playlist").setDescription("Playlist name or link").setRequired(true)),
+    .addStringOption((option) => option.setName(PlaylistCommandOption.Search).setDescription("Playlist name or link"))
+    .addStringOption((option) =>
+      option
+        .setName(PlaylistCommandOption.Preset)
+        .setDescription("choose one of well-known playlist")
+        .addChoices({ name: "mashup", value: PlaylistPreset.Mashup }, { name: "DOTA Night", value: PlaylistPreset.DotaNight })
+    ),
   cooldown: 5,
   permissions: [
     PermissionsBitField.Flags.Connect,
@@ -25,8 +36,13 @@ export default {
     PermissionsBitField.Flags.AddReactions,
     PermissionsBitField.Flags.ManageMessages
   ],
-  async execute(interaction: ChatInputCommandInteraction, queryOptionName = 'playlist') {
-    let argSongName = interaction.options.getString(queryOptionName);
+  async execute(interaction: ChatInputCommandInteraction) {
+    const playlistPresetName = interaction.options.getString(PlaylistCommandOption.Preset);
+    let argSongName = interaction.options.getString(PlaylistCommandOption.Search);
+    
+    if (playlistPresetName && Object.values<string>(PlaylistPreset).includes(playlistPresetName)) {
+      argSongName = Playlist.getUrlFor(playlistPresetName as PlaylistPreset);
+    }
 
     const guildMemer = interaction.guild!.members.cache.get(interaction.user.id);
     const { channel } = guildMemer!.voice;
@@ -84,7 +100,12 @@ export default {
 
     let playlistEmbed = new EmbedBuilder()
       .setTitle(`${playlist.data.title}`)
-      .setDescription(playlist.videos.map((song: Song, index: number) => `${index + 1}. ${song.title}`).join("\n").slice(0, 4095))
+      .setDescription(
+        playlist.videos
+          .map((song: Song, index: number) => `${index + 1}. ${song.title}`)
+          .join("\n")
+          .slice(0, 4095)
+      )
       .setURL(playlist.data.url!)
       .setColor("#F8AA2A")
       .setTimestamp();
