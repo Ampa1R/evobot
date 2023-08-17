@@ -8,11 +8,15 @@ export default {
   data: new SlashCommandBuilder().setName("skip").setDescription(i18n.__("skip.description")),
   execute(interaction: ChatInputCommandInteraction) {
     const queue = bot.queues.get(interaction.guild!.id);
-    const guildMemer = interaction.guild!.members.cache.get(interaction.user.id);
+    const guildMember = interaction.guild!.members.cache.get(interaction.user.id);
 
-    if (!queue) return interaction.reply(i18n.__("skip.errorNotQueue")).catch(Logger.error);
+    if (!queue) {
+      return interaction.reply(i18n.__("skip.errorNotQueue")).catch(Logger.error);
+    }
 
-    if (!canModifyQueue(guildMemer!)) return i18n.__("common.errorNotChannel");
+    if (!canModifyQueue(guildMember!)) {
+      return interaction.reply(i18n.__("common.errorNotChannel")).catch(Logger.error);
+    }
 
     queue.player.stop(true);
 
