@@ -29,6 +29,7 @@
     "play-dl": "^1.9.7",
     "soundcloud-downloader": "^0.2.3",
     "string-progressbar": "^1.0.4",
+    "typescript": "^5.2.2",
     "youtube-sr": "~4.3.0"
   },
   "devDependencies": {
