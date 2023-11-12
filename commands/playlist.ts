@@ -27,7 +27,7 @@ export default {
       option
         .setName(PlaylistCommandOption.Preset)
         .setDescription("choose one of well-known playlist")
-        .addChoices({ name: "mashup", value: PlaylistPreset.Mashup }, { name: "DOTA Night", value: PlaylistPreset.DotaNight })
+        .addChoices({ name: "mashup", value: PlaylistPreset.Mashup }, { name: "DOTA Night", value: PlaylistPreset.DotaNight }, { name: "Rap", value: PlaylistPreset.Rap })
     ),
   cooldown: 5,
   permissions: [
@@ -39,7 +39,7 @@ export default {
   async execute(interaction: ChatInputCommandInteraction) {
     const playlistPresetName = interaction.options.getString(PlaylistCommandOption.Preset);
     let argSongName = interaction.options.getString(PlaylistCommandOption.Search);
-    
+
     if (playlistPresetName && Object.values<string>(PlaylistPreset).includes(playlistPresetName)) {
       argSongName = Playlist.getUrlFor(playlistPresetName as PlaylistPreset);
     }

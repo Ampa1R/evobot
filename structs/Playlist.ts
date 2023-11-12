@@ -6,7 +6,8 @@ const pattern = /^.*(youtu.be\/|list=)([^#\&\?]*).*/i;
 
 export enum PlaylistPreset {
   Mashup = "playlist_mashup",
-  DotaNight = "playlist_dota_night"
+  DotaNight = "playlist_dota_night",
+  Rap = "playlist_rap",
 }
 
 export class Playlist {
@@ -45,7 +46,8 @@ export class Playlist {
 
   private static presets: Map<string, string> = new Map([
     [PlaylistPreset.DotaNight, "https://youtube.com/playlist?list=PLlNHQmUIaTEoeDhRjQzNnhbe5rvRpaasr"],
-    [PlaylistPreset.Mashup, "https://www.youtube.com/playlist?list=PL-HyRIRUsinrpkW9X_RB-tNn3_sjfgU0l"]
+    [PlaylistPreset.Mashup, "https://youtube.com/playlist?list=PL-HyRIRUsinrpkW9X_RB-tNn3_sjfgU0l"],
+    [PlaylistPreset.Rap, "https://youtube.com/playlist?list=PL_kK8EsrLe7l_six79UGYt_6OHaM0co66"],
   ]);
 
   public static getUrlFor(preset: PlaylistPreset): string | null {
