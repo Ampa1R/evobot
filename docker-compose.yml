@@ -1,3 +1,5 @@
+version: "3.8"
+
 name: evobot
 services:
   evobot:
@@ -5,3 +7,5 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:${PORT:-9100}:${INTERNAL_METRICS_PORT:-3000}"
