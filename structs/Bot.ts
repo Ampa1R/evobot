@@ -23,7 +23,7 @@ import { Song } from "./Song";
 
 export class Bot {
   private readonly logger = new Logger(this.constructor.name);
-  public readonly prefix = config.PREFIX;
+  public readonly prefix = `/`;
   public commands = new Collection<string, Command>();
   public slashCommands = new Array<ApplicationCommandDataResolvable>();
   public slashCommandsMap = new Collection<string, Command>();

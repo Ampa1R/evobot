@@ -1,5 +1,8 @@
 import { Client, GatewayIntentBits } from "discord.js";
+import startMetricsServer from "./metrics";
 import { Bot } from "./structs/Bot";
+
+startMetricsServer();
 
 export const bot = new Bot(
   new Client({
