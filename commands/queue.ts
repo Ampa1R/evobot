@@ -79,7 +79,7 @@ export default {
   }
 };
 
-function generateQueueEmbed(interaction: CommandInteraction, songs: Song[]) {
+export function generateQueueEmbed(interaction: CommandInteraction, songs: Song[]): EmbedBuilder[] {
   let embeds = [];
   let k = 10;
 

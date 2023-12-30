@@ -98,14 +98,19 @@ export default {
       newQueue.enqueue(...playlist.videos);
     }
 
+    const descriptionLines = playlist.videos
+      .slice(0, 5)
+      .map((song: Song, index: number) => `${index + 1}. ${song.title}`);
+    if (playlist.videos.length > 5) {
+      descriptionLines.push('...', `Total: ${playlist.videos.length} videos`);
+    }
+    const description = descriptionLines
+      .join("\n")
+      .slice(0, 4095);
+
     let playlistEmbed = new EmbedBuilder()
       .setTitle(`${playlist.data.title}`)
-      .setDescription(
-        playlist.videos
-          .map((song: Song, index: number) => `${index + 1}. ${song.title}`)
-          .join("\n")
-          .slice(0, 4095)
-      )
+      .setDescription(description)
       .setURL(playlist.data.url!)
       .setColor("#F8AA2A")
       .setTimestamp();

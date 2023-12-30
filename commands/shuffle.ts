@@ -1,8 +1,9 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, InteractionReplyOptions, SlashCommandBuilder } from "discord.js";
 import { bot } from "../index";
 import { i18n } from "../utils/i18n";
 import { canModifyQueue } from "../utils/queue";
 import { Logger } from "../utils/logger";
+import { generateQueueEmbed } from "./queue";
 
 export default {
   data: new SlashCommandBuilder().setName("shuffle").setDescription(i18n.__("shuffle.description")),
@@ -24,7 +25,13 @@ export default {
 
     queue.songs = songs;
 
-    const content = { content: i18n.__mf("shuffle.result", { author: interaction.user.id }) };
+    // FIXME: generates pages for the whole queue, we need only first page
+    const queueEmbed = generateQueueEmbed(interaction, queue.songs);
+
+    const content: InteractionReplyOptions = {
+      content: i18n.__mf("shuffle.result", { author: interaction.user.id }),
+      embeds: [queueEmbed[0]],
+    };
 
     if (interaction.replied) interaction.followUp(content).catch(Logger.error);
     else interaction.reply(content).catch(Logger.error);

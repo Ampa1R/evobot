@@ -34,7 +34,8 @@ export class Playlist {
     let playlist;
 
     if (urlValid) {
-      playlist = await youtube.getPlaylist(url);
+      // for fetching more than 100 videos we need fetchAll: true
+      playlist = await youtube.getPlaylist(url, { fetchAll: true });
     } else {
       const result = await youtube.searchOne(search, "playlist");
 
