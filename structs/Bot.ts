@@ -10,6 +10,7 @@ import {
   Routes,
   Snowflake
 } from "discord.js";
+import play from "play-dl";
 import { readdirSync } from "fs";
 import { join } from "path";
 import { Command } from "../interfaces/Command";
@@ -42,6 +43,12 @@ export class Bot {
 
     this.client.on("warn", (info) => this.logger.log(info));
     this.client.on("error", this.logger.error);
+
+    play.setToken({
+      youtube: {
+        cookie: "Your Cookies"
+      }
+    });
 
     this.onInteractionCreate();
   }
