@@ -46,8 +46,8 @@ export class Bot {
 
     play.setToken({
       youtube: {
-        cookie: "Your Cookies"
-      }
+        cookie: config.YOUTUBE_COOKIE,
+      },
     });
 
     this.onInteractionCreate();
