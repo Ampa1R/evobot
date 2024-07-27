@@ -14,6 +14,7 @@ try {
     DEFAULT_VOLUME: parseInt(process.env.DEFAULT_VOLUME!) || 100,
     LOCALE: process.env.LOCALE || "en",
     METRICS_PORT: parseInt(process.env.METRICS_PORT!) || 3000,
+    YOUTUBE_COOKIE: process.env.YOUTUBE_COOKIE || "",
   };
 }
 

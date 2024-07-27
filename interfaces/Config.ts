@@ -6,4 +6,5 @@ export interface Config {
   DEFAULT_VOLUME: number;
   LOCALE: string;
   METRICS_PORT: number;
+  YOUTUBE_COOKIE: string;
 }
